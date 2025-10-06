@@ -1,0 +1,77 @@
+No files changed, compilation skipped
+
+Ran 1 test for test/ChiefReentrancy.t.sol:ChiefReentrancyTest
+[FAIL: deposits[msg.sender] must be 0 before update] testLockTriggersReentrancyCallback() (gas: 147067)
+Logs:
+  [TEST] Approve done
+  [TEST] User balance before lock: 1000000000000000000
+  [TEST] User deposits before lock: 0
+  [EVENT] ReentrantCallback, depositsBefore=48879
+  [EVENT] Lock
+  [TEST] User deposits after lock: 1000000000000000000
+
+Traces:
+  [4513740] ChiefReentrancyTest::setUp()
+    ├─ [1635844] → new Chief@0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f
+    │   └─ ← [Return] 8165 bytes of code
+    ├─ [1083083] → new MockTokenWithCallback@0x2e234DAe75C793f67A35089C9d99245E1C58470b
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: ChiefReentrancyTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], value: 100000000000000000000 [1e20])
+    │   └─ ← [Return] 4726 bytes of code
+    ├─ [1635844] → new Chief@0xF62849F9A0B5Bf2913b396098F7c7019b51A820a
+    │   └─ ← [Return] 8165 bytes of code
+    ├─ [25418] MockTokenWithCallback::mint(0x000000000000000000000000000000000000bEEF, 1000000000000000000 [1e18])
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: 0x000000000000000000000000000000000000bEEF, value: 1000000000000000000 [1e18])
+    │   └─ ← [Stop]
+    └─ ← [Stop]
+
+  [147067] ChiefReentrancyTest::testLockTriggersReentrancyCallback()
+    ├─ [0] VM::startPrank(0x000000000000000000000000000000000000bEEF)
+    │   └─ ← [Return]
+    ├─ [25078] MockTokenWithCallback::approve(Chief: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 1000000000000000000 [1e18])
+    │   ├─ emit Approval(owner: 0x000000000000000000000000000000000000bEEF, spender: Chief: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], value: 1000000000000000000 [1e18])
+    │   └─ ← [Return] true
+    ├─ [0] console::log("[TEST] Approve done") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [2824] MockTokenWithCallback::balanceOf(0x000000000000000000000000000000000000bEEF) [staticcall]
+    │   └─ ← [Return] 1000000000000000000 [1e18]
+    ├─ [0] console::log("[TEST] User balance before lock: %s", 1000000000000000000 [1e18]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [2912] Chief::deposits(0x000000000000000000000000000000000000bEEF) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] console::log("[TEST] User deposits before lock: %s", 0) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] VM::recordLogs()
+    │   └─ ← [Return]
+    ├─ [74588] Chief::lock(1000000000000000000 [1e18])
+    │   ├─ [46739] MockTokenWithCallback::transferFrom(0x000000000000000000000000000000000000bEEF, Chief: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 1000000000000000000 [1e18])
+    │   │   ├─ emit Transfer(from: 0x000000000000000000000000000000000000bEEF, to: Chief: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], value: 1000000000000000000 [1e18])
+    │   │   ├─ [2912] Chief::deposits(0x000000000000000000000000000000000000bEEF) [staticcall]
+    │   │   │   └─ ← [Return] 0
+    │   │   ├─ emit ReentrantCallback(who: 0x000000000000000000000000000000000000bEEF, wad: 1000000000000000000 [1e18], depositsBefore: 0)
+    │   │   ├─ [5610] Chief::etch([])
+    │   │   │   ├─ emit Etch(slate: 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470, yays: [])
+    │   │   │   └─ ← [Return] 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470
+    │   │   └─ ← [Return] 0x0000000000000000000000000000000000000000000000000000000000000001
+    │   ├─ emit Lock(usr: 0x000000000000000000000000000000000000bEEF, wad: 1000000000000000000 [1e18])
+    │   └─ ← [Stop]
+    ├─ [0] VM::getRecordedLogs() [staticcall]
+    │   └─ ← [Return] [([0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0x000000000000000000000000000000000000000000000000000000000000beef, 0x000000000000000000000000f62849f9a0b5bf2913b396098f7c7019b51a820a], 0x0000000000000000000000000000000000000000000000000de0b6b3a7640000, 0x2e234DAe75C793f67A35089C9d99245E1C58470b), ([0xce50e80f0bd7e1458ff3a6f3d4dfe44589832a5e938f412ad3ba58bf890ee2bd], 0x000000000000000000000000000000000000000000000000000000000000beef0000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000000000000000000000, 0x2e234DAe75C793f67A35089C9d99245E1C58470b), ([0xbde4476d3fa00c45be48daa5d230f4dbcd5d571237f236d9e24793a4468edbc7, 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470], 0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000, 0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f), ([0x625fed9875dada8643f2418b838ae0bc78d9a148a18eee4ee1979ff0f3f5d427, 0x000000000000000000000000000000000000000000000000000000000000beef], 0x0000000000000000000000000000000000000000000000000de0b6b3a7640000, 0xF62849F9A0B5Bf2913b396098F7c7019b51A820a)]
+    ├─ [0] console::log("[EVENT] ReentrantCallback, depositsBefore=%s", 48879 [4.887e4]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("[EVENT] Lock") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [912] Chief::deposits(0x000000000000000000000000000000000000bEEF) [staticcall]
+    │   └─ ← [Return] 1000000000000000000 [1e18]
+    ├─ [0] console::log("[TEST] User deposits after lock: %s", 1000000000000000000 [1e18]) [staticcall]
+    │   └─ ← [Stop]
+    └─ ← [Revert] deposits[msg.sender] must be 0 before update
+
+Suite result: FAILED. 0 passed; 1 failed; 0 skipped; finished in 1.63ms (497.21µs CPU time)
+
+Ran 1 test suite in 13.96ms (1.63ms CPU time): 0 tests passed, 1 failed, 0 skipped (1 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/ChiefReentrancy.t.sol:ChiefReentrancyTest
+[FAIL: deposits[msg.sender] must be 0 before update] testLockTriggersReentrancyCallback() (gas: 147067)
+
+Encountered a total of 1 failing tests, 0 tests succeeded
